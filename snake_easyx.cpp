@@ -55,6 +55,13 @@ bool paused;            // 暂停标志
 int speedDelay;         // 帧间隔（ms），值越小越快
 bool soundOn;           // 音效开关
 
+// 按钮区域（右侧面板内）
+const int BTN_X = PANEL_X + 12;
+const int BTN_Y = GAME_Y + GAME_H - 130;
+const int BTN_W = 146;
+const int BTN_H = 38;
+bool btnHover = false;
+
 /* ===================== 音效系统 ===================== */
 // 用 Beep(freq, dur) 生成 8-bit 风格音效，无需任何音频文件
 // Beep 是阻塞的 → 用 std::thread 异步播放，不卡主循环
@@ -257,13 +264,31 @@ void renderAll() {
     }
 
     // 游戏状态
+    // ---- 重新开始按钮 ----
+    {
+        COLORREF btnBg   = btnHover ? COLOR_BTN_HOVER : COLOR_BTN_BG;
+        COLORREF btnEdge = btnHover ? COLOR_BORDER    : RGB(80,80,100);
+        // 按钮阴影
+        setfillcolor(RGBA(0,0,0,80));
+        solidroundrect(BTN_X + 2, BTN_Y + 2, BTN_X + BTN_W + 2, BTN_Y + BTN_H + 2, 8, 8);
+        // 按钮主体
+        drawRoundRect(BTN_X, BTN_Y, BTN_W, BTN_H, 8, btnBg);
+        // 按钮边框
+        setlinecolor(btnEdge);
+        setlinestyle(PS_SOLID, 2);
+        roundrect(BTN_X, BTN_Y, BTN_X + BTN_W, BTN_Y + BTN_H, 8, 8);
+        // 按钮文字
+        drawTextCenter(BTN_X, BTN_Y, BTN_W, BTN_H,
+                       _T("🔄 重新开始"), btnHover ? COLOR_TITLE : COLOR_TEXT, 15, btnHover);
+    }
+
     // 音效状态
-    int botY = py + ph - 120;
+    int botY = BTN_Y + BTN_H + 12;
     settextcolor(RGB(140, 140, 160));
     settextstyle(12, 0, _T("Microsoft YaHei"));
     outtextxy(px + 18, botY, soundOn ? _T("🔊 音效: 开") : _T("🔇 音效: 关"));
 
-    botY = py + ph - 100;
+    botY = botY + 28;
     if (gameOver) {
         drawTextCenter(px, botY, pw, 30, _T("状态: 已结束"), COLOR_GAMEOVER, 18, true);
         drawTextCenter(px, botY + 36, pw, 24, _T("按 R 重新开始"), COLOR_TEXT, 14);
@@ -366,6 +391,21 @@ void handleInput() {
     }
 }
 
+/* ===================== 鼠标处理 ===================== */
+void handleMouse() {
+    if (!MouseHit()) return;
+    MOUSEMSG m = GetMouseMsg();
+
+    // 检测鼠标是否悬停在按钮上
+    btnHover = (m.x >= BTN_X && m.x <= BTN_X + BTN_W &&
+                m.y >= BTN_Y && m.y <= BTN_Y + BTN_H);
+
+    // 左键点击按钮 → 重新开始
+    if (m.uMsg == WM_LBUTTONDOWN && btnHover) {
+        initGame();
+    }
+}
+
 /* ===================== 游戏逻辑更新 ===================== */
 void update() {
     if (gameOver || paused) return;
@@ -428,6 +468,7 @@ int main() {
     // 5. 主循环
     while (true) {
         handleInput();   // 处理键盘输入
+        handleMouse();   // 处理鼠标事件
         update();        // 更新游戏逻辑
         renderAll();     // 绘制全部画面
         Sleep(speedDelay);  // 控制帧率
