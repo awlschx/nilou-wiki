@@ -23,6 +23,8 @@
 #include <ctime>           // time
 #include <string>          // std::string, std::to_wstring
 #include <algorithm>       // std::find
+#include <thread>          // std::thread (音效异步播放)
+#pragma comment(lib, "winmm.lib")  // 链接 winmm (Beep 需要)
 using namespace std;
 
 /* ===================== 游戏常量 ===================== */
@@ -51,6 +53,44 @@ int score;              // 分数
 bool gameOver;          // 游戏结束标志
 bool paused;            // 暂停标志
 int speedDelay;         // 帧间隔（ms），值越小越快
+bool soundOn;           // 音效开关
+
+/* ===================== 音效系统 ===================== */
+// 用 Beep(freq, dur) 生成 8-bit 风格音效，无需任何音频文件
+// Beep 是阻塞的 → 用 std::thread 异步播放，不卡主循环
+
+void playAsync(int freq, int ms) {
+    if (!soundOn) return;
+    thread([](int f, int d) { Beep(f, d); }, freq, ms).detach();
+}
+
+void sndEat() {
+    // 吃食物：上行音阶 (短促愉快)
+    if (!soundOn) return;
+    thread([]() {
+        Beep(660, 60);  Beep(880, 80);
+    }).detach();
+}
+
+void sndDeath() {
+    // 死亡：下行滑音 (低沉)
+    if (!soundOn) return;
+    thread([]() {
+        Beep(440, 120); Beep(330, 150); Beep(220, 250);
+    }).detach();
+}
+
+void sndPause() {
+    // 暂停/继续：单音
+    if (!soundOn) return;
+    thread([]() { Beep(550, 80); }).detach();
+}
+
+void sndMove() {
+    // 移动节拍：极短 (可选，频繁触发)
+    if (!soundOn) return;
+    thread([]() { Beep(200, 15); }).detach();
+}
 
 /* ===================== EasyX 颜色定义 ===================== */
 #define COLOR_BG         RGB( 30,  30,  40)   // 窗口背景
@@ -207,16 +247,23 @@ void renderAll() {
         _T("D/→  向右"),
         _T("空格  暂停/继续"),
         _T("R    重新开始"),
+        _T("M    音效开关"),
         _T("ESC  退出游戏"),
     };
-    for (int i = 0; i < 7; i++) {
+    for (int i = 0; i < 8; i++) {
         settextcolor(RGB(180, 180, 200));
         settextstyle(13, 0, _T("Microsoft YaHei"));
         outtextxy(px + 18, sepY + 48 + i * 24, tips[i]);
     }
 
     // 游戏状态
-    int botY = py + ph - 100;
+    // 音效状态
+    int botY = py + ph - 120;
+    settextcolor(RGB(140, 140, 160));
+    settextstyle(12, 0, _T("Microsoft YaHei"));
+    outtextxy(px + 18, botY, soundOn ? _T("🔊 音效: 开") : _T("🔇 音效: 关"));
+
+    botY = py + ph - 100;
     if (gameOver) {
         drawTextCenter(px, botY, pw, 30, _T("状态: 已结束"), COLOR_GAMEOVER, 18, true);
         drawTextCenter(px, botY + 36, pw, 24, _T("按 R 重新开始"), COLOR_TEXT, 14);
@@ -276,6 +323,7 @@ void initGame() {
     score = 0;
     gameOver = false;
     paused = false;
+    soundOn = true;
     speedDelay = 1000 / FPS;  // ~83ms
     srand((unsigned)time(0));
     spawnFood();
@@ -301,7 +349,12 @@ void handleInput() {
             if (dir != LEFT)  dir = RIGHT; break;
         // ---- 暂停 ----
         case ' ':  // 空格
-            if (!gameOver) paused = !paused;
+            if (!gameOver) { paused = !paused; sndPause(); }
+            break;
+        // ---- 音效开关 ----
+        case 'm': case 'M':
+            soundOn = !soundOn;
+            if (soundOn) { thread([]() { Beep(800,60); Beep(1000,60); }).detach(); }
             break;
         // ---- 重新开始 ----
         case 'r': case 'R':
@@ -329,12 +382,14 @@ void update() {
     // 碰墙检测
     if (head.x < 0 || head.x >= COLS || head.y < 0 || head.y >= ROWS) {
         gameOver = true;
+        sndDeath();
         return;
     }
 
     // 碰自己检测
     if (find(snake.begin(), snake.end(), head) != snake.end()) {
         gameOver = true;
+        sndDeath();
         return;
     }
 
@@ -344,6 +399,7 @@ void update() {
     // 吃食物判断
     if (head.x == food.x && head.y == food.y) {
         score += BASE_SCORE;
+        sndEat();
         spawnFood();
     } else {
         snake.pop_back();  // 没吃到就去尾
