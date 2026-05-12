@@ -1,0 +1,7 @@
+*.exe
+*.ilk
+*.obj
+*.pdb
+vc140.pdb
+snake.cpp
+nilou.html

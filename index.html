@@ -1,0 +1,746 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>妮露 - 原神WIKI_BWIKI_哔哩哔哩</title>
+<style>
+/* ========== Reset & Base ========== */
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --bg-dark: #1a1a1a;
+  --bg-card: #222;
+  --bg-sidebar: #1e1e1e;
+  --text: #ccc;
+  --text-light: #999;
+  --text-heading: #e0e0e0;
+  --border: #333;
+  --accent: #4a90d9;
+  --accent-light: #7ec8e3;
+  --bilibili-pink: #fb7299;
+  --hydro: #4a90d9;
+  --hydro-light: #7ec8e3;
+  --star-gold: #ffb84d;
+  --header-h: 48px;
+  --sidebar-w: 300px;
+}
+
+body {
+  font-family: 'Microsoft YaHei', 'PingFang SC', 'Helvetica Neue', Arial, sans-serif;
+  background: var(--bg-dark);
+  color: var(--text);
+  line-height: 1.6;
+  min-height: 100vh;
+}
+
+a { color: var(--accent-light); text-decoration: none; }
+a:hover { color: #b8e4f0; }
+
+/* ========== Top Header Bar ========== */
+.topbar {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 1000;
+  height: var(--header-h);
+  background: #1a1a1a;
+  border-bottom: 1px solid #333;
+  display: flex;
+  align-items: center;
+  padding: 0 16px;
+  gap: 16px;
+}
+
+.topbar .logo {
+  display: flex; align-items: center; gap: 8px;
+  font-size: 16px; font-weight: bold; color: var(--bilibili-pink);
+  white-space: nowrap;
+}
+.topbar .logo span { color: #ccc; font-size: 13px; font-weight: normal; }
+
+.topbar .nav-links { display: flex; gap: 0; list-style: none; }
+.topbar .nav-links a {
+  display: block; padding: 12px 16px; color: #aaa; font-size: 13px;
+  transition: all 0.2s; border-bottom: 2px solid transparent;
+}
+.topbar .nav-links a:hover, .topbar .nav-links a.active {
+  color: #fff; background: rgba(255,255,255,0.04); border-bottom-color: var(--bilibili-pink);
+}
+
+.topbar .search-box {
+  margin-left: auto;
+  display: flex; align-items: center;
+  background: #2a2a2a; border: 1px solid #444; border-radius: 6px;
+  overflow: hidden;
+}
+.topbar .search-box input {
+  background: transparent; border: none; color: #ccc; padding: 6px 12px;
+  width: 200px; font-size: 13px; outline: none;
+}
+.topbar .search-box button {
+  background: #444; border: none; color: #aaa; padding: 6px 14px;
+  cursor: pointer; font-size: 14px;
+}
+.topbar .search-box button:hover { background: #555; color: #fff; }
+
+/* ========== Page Layout ========== */
+.page-wrap {
+  display: flex;
+  padding-top: var(--header-h);
+  min-height: calc(100vh - var(--header-h));
+}
+
+/* ========== Left Sidebar ========== */
+.sidebar {
+  width: var(--sidebar-w);
+  flex-shrink: 0;
+  background: var(--bg-sidebar);
+  border-right: 1px solid var(--border);
+  padding: 20px 16px;
+  position: sticky;
+  top: var(--header-h);
+  height: calc(100vh - var(--header-h));
+  overflow-y: auto;
+}
+
+/* Character Portrait */
+.char-portrait {
+  position: relative;
+  width: 100%;
+  border-radius: 8px;
+  overflow: hidden;
+  margin-bottom: 16px;
+  background: linear-gradient(180deg, #1a3050 0%, #0d1b2a 100%);
+  border: 2px solid #333;
+}
+.char-portrait img {
+  width: 100%; display: block;
+}
+.char-portrait .char-name-overlay {
+  position: absolute; bottom: 0; left: 0; right: 0;
+  background: linear-gradient(transparent, rgba(0,0,0,0.85));
+  padding: 30px 12px 10px;
+  text-align: center;
+}
+.char-name-overlay h2 { font-size: 20px; color: #fff; letter-spacing: 2px; }
+.char-name-overlay .en-name { font-size: 11px; color: #999; }
+
+/* Title badge */
+.title-badge {
+  text-align: center; margin-bottom: 14px;
+  color: var(--accent-light); font-size: 13px;
+  letter-spacing: 2px;
+  padding: 8px;
+  background: rgba(74,144,217,0.08);
+  border-radius: 4px;
+  border: 1px solid rgba(74,144,217,0.15);
+}
+
+/* Stars */
+.stars { text-align: center; margin-bottom: 14px; font-size: 18px; letter-spacing: 2px; color: var(--star-gold); }
+
+/* Info Table */
+.info-table {
+  width: 100%; border-collapse: collapse; font-size: 13px;
+}
+.info-table tr { border-bottom: 1px solid rgba(255,255,255,0.05); }
+.info-table td {
+  padding: 8px 6px; vertical-align: middle;
+}
+.info-table .label {
+  color: var(--text-light); white-space: nowrap; width: 60px;
+  font-size: 12px; text-align: right; padding-right: 10px;
+}
+.info-table .value { color: #ddd; }
+
+/* Element badge */
+.element-badge {
+  display: inline-block;
+  padding: 2px 10px; border-radius: 3px;
+  font-size: 11px; letter-spacing: 1px;
+  background: rgba(74,144,217,0.15); color: var(--accent-light);
+  border: 1px solid rgba(74,144,217,0.25);
+}
+.weapon-badge {
+  display: inline-block;
+  padding: 2px 10px; border-radius: 3px;
+  font-size: 11px; letter-spacing: 1px;
+  background: rgba(255,255,255,0.06); color: #ccc;
+  border: 1px solid rgba(255,255,255,0.1);
+}
+
+/* ========== Main Content ========== */
+.main-content {
+  flex: 1;
+  padding: 20px 24px;
+  min-width: 0;
+}
+
+/* Breadcrumb */
+.breadcrumb { font-size: 12px; color: #666; margin-bottom: 16px; }
+.breadcrumb a { color: #777; }
+.breadcrumb a:hover { color: var(--accent-light); }
+
+/* Page title */
+.page-title {
+  font-size: 26px; color: #fff; margin-bottom: 4px;
+  padding-bottom: 12px; border-bottom: 1px solid #333;
+}
+.page-subtitle { font-size: 13px; color: #777; margin-bottom: 20px; }
+
+/* ========== Tabs ========== */
+.tab-nav {
+  display: flex; gap: 0; border-bottom: 2px solid #333; margin-bottom: 20px;
+}
+.tab-btn {
+  padding: 10px 24px; font-size: 14px; color: #888; cursor: pointer;
+  border: none; background: transparent; border-bottom: 2px solid transparent;
+  margin-bottom: -2px; transition: all 0.2s;
+  font-family: inherit;
+}
+.tab-btn:hover { color: #ccc; }
+.tab-btn.active { color: var(--accent-light); border-bottom-color: var(--accent-light); }
+
+.tab-panel { display: none; animation: fadeIn 0.3s; }
+.tab-panel.active { display: block; }
+
+@keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
+
+/* ========== Stats Table ========== */
+.stats-table {
+  width: 100%; border-collapse: collapse; font-size: 13px;
+  margin-bottom: 20px;
+}
+.stats-table thead th {
+  background: #2a2a2a; padding: 10px 12px; text-align: center;
+  font-weight: normal; color: #aaa; border: 1px solid #333; font-size: 12px;
+}
+.stats-table tbody td {
+  padding: 8px 12px; text-align: center; border: 1px solid #2a2a2a; color: #ccc;
+}
+.stats-table tbody tr:hover td { background: rgba(255,255,255,0.02); }
+.stats-table .highlight-col { color: var(--accent-light); font-weight: bold; }
+
+/* ========== Section Cards ========== */
+.section-title {
+  font-size: 18px; color: #fff; margin: 28px 0 14px;
+  padding-left: 10px; border-left: 3px solid var(--accent-light);
+}
+.section-title-sm {
+  font-size: 15px; color: #ddd; margin: 18px 0 10px;
+  padding-left: 8px; border-left: 2px solid #444;
+}
+
+/* ========== Talent Display ========== */
+.talent-block {
+  background: #222; border: 1px solid #2a2a2a; border-radius: 8px;
+  padding: 20px; margin-bottom: 16px;
+}
+.talent-header {
+  display: flex; align-items: center; gap: 14px; margin-bottom: 12px;
+}
+.talent-icon {
+  width: 52px; height: 52px; border-radius: 8px;
+  background: #1a3050; display: flex; align-items: center;
+  justify-content: center; font-size: 24px; flex-shrink: 0;
+  border: 1px solid #3a3a3a;
+}
+.talent-icon img { width: 100%; height: 100%; border-radius: 8px; object-fit: cover; }
+.talent-name { font-size: 16px; color: #e0e0e0; }
+.talent-type { font-size: 12px; color: #777; }
+
+.talent-desc { font-size: 13px; color: #aaa; line-height: 1.8; margin-bottom: 12px; }
+
+.talent-table {
+  width: 100%; border-collapse: collapse; font-size: 12px;
+}
+.talent-table th {
+  background: #2a2a2a; padding: 7px 10px; text-align: center;
+  font-weight: normal; color: #999; border: 1px solid #333;
+}
+.talent-table td {
+  padding: 6px 10px; text-align: center; border: 1px solid #2a2a2a; color: #bbb;
+}
+.talent-table tr:hover td { background: rgba(255,255,255,0.015); }
+
+/* ========== Constellation ========== */
+.const-grid {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 12px;
+}
+.const-card {
+  background: #222; border: 1px solid #2a2a2a; border-radius: 8px;
+  padding: 16px; transition: all 0.3s;
+}
+.const-card:hover { border-color: #444; background: #252525; }
+.const-card .c-level {
+  font-size: 11px; color: var(--accent-light); letter-spacing: 2px;
+  margin-bottom: 4px;
+}
+.const-card .c-name { font-size: 15px; color: #e0e0e0; font-weight: bold; margin-bottom: 6px; }
+.const-card .c-desc { font-size: 12px; color: #999; line-height: 1.6; }
+
+/* ========== Story ========== */
+.story-block { margin-bottom: 16px; }
+.story-block h4 { font-size: 14px; color: #ddd; margin-bottom: 6px; }
+.story-block p { font-size: 13px; color: #aaa; line-height: 1.9; text-indent: 2em; }
+
+/* ========== Build ========== */
+.build-category { margin-bottom: 20px; }
+.build-category h3 {
+  font-size: 15px; color: #e0e0e0; margin-bottom: 10px;
+  padding-bottom: 6px; border-bottom: 1px solid #2a2a2a;
+}
+.build-grid {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 10px;
+}
+.build-item {
+  background: #222; border: 1px solid #2a2a2a; border-radius: 6px;
+  padding: 14px; display: flex; align-items: center; gap: 12px; transition: all 0.3s;
+}
+.build-item:hover { border-color: #444; background: #252525; }
+.build-icon {
+  width: 44px; height: 44px; border-radius: 6px;
+  background: #2a2a2a; display: flex; align-items: center;
+  justify-content: center; font-size: 20px; flex-shrink: 0;
+  border: 1px solid #3a3a3a;
+}
+.build-info .b-name { font-size: 14px; color: #ddd; }
+.build-info .b-note { font-size: 11px; color: #777; margin-top: 2px; }
+
+/* ========== Footer ========== */
+.page-footer {
+  background: #1a1a1a; border-top: 1px solid #333;
+  padding: 20px 24px; text-align: center; font-size: 12px; color: #666;
+}
+.page-footer a { color: #888; }
+
+/* ========== Scrollbar ========== */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: #1a1a1a; }
+::-webkit-scrollbar-thumb { background: #444; border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: #555; }
+
+/* ========== Responsive ========== */
+@media (max-width: 768px) {
+  .page-wrap { flex-direction: column; }
+  .sidebar {
+    width: 100%; height: auto; position: static;
+    border-right: none; border-bottom: 1px solid #333;
+    display: flex; flex-wrap: wrap; gap: 16px; align-items: flex-start;
+  }
+  .char-portrait { width: 140px; }
+  .info-table-wrap { flex: 1; min-width: 200px; }
+  .topbar .nav-links { display: none; }
+  .topbar .search-box input { width: 120px; }
+  .const-grid { grid-template-columns: 1fr; }
+  .build-grid { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+
+<!-- ====== 顶部导航栏 ====== -->
+<header class="topbar">
+  <div class="logo">原神WIKI<span> | BWIKI</span></div>
+  <ul class="nav-links">
+    <li><a href="#">首页</a></li>
+    <li><a href="#" class="active">角色</a></li>
+    <li><a href="#">武器</a></li>
+    <li><a href="#">圣遗物</a></li>
+    <li><a href="#">任务</a></li>
+    <li><a href="#">攻略</a></li>
+  </ul>
+  <div class="search-box">
+    <input type="text" placeholder="搜索角色、武器...">
+    <button>&#128269;</button>
+  </div>
+</header>
+
+<!-- ====== 页面主体 ====== -->
+<div class="page-wrap">
+
+  <!-- ====== 左侧信息栏 ====== -->
+  <aside class="sidebar">
+    <!-- 角色立绘 -->
+    <div class="char-portrait">
+      <img src="https://static.wikia.nocookie.net/gensin-impact/images/d/dc/Nilou_Card.png"
+           alt="妮露" style="width:100%;display:block;"
+           onerror="this.parentElement.innerHTML='<div style=width:100%;aspect-ratio:3/4;background:linear-gradient(180deg,#1a3050,#0d1b2a);display:flex;align-items:center;justify-content:center;font-size:80px;color:#7ec8e3;>💃</div>'">
+      <div class="char-name-overlay">
+        <h2>妮 露</h2>
+        <div class="en-name">Nilou</div>
+      </div>
+    </div>
+
+    <!-- 称号 -->
+    <div class="title-badge">莲光落舞筵</div>
+
+    <!-- 星级 -->
+    <div class="stars">★★★★★</div>
+
+    <!-- 基本信息表 -->
+    <div class="info-table-wrap">
+      <table class="info-table">
+        <tr><td class="label">神之眼</td><td class="value"><span class="element-badge">💧 水</span></td></tr>
+        <tr><td class="label">武器</td><td class="value"><span class="weapon-badge">🗡 单手剑</span></td></tr>
+        <tr><td class="label">所属</td><td class="value">祖拜尔剧场</td></tr>
+        <tr><td class="label">地区</td><td class="value">须弥</td></tr>
+        <tr><td class="label">命之座</td><td class="value">睡莲座</td></tr>
+        <tr><td class="label">生日</td><td class="value">12月3日</td></tr>
+        <tr><td class="label">体型</td><td class="value">少女</td></tr>
+        <tr><td class="label">实装版本</td><td class="value">3.1</td></tr>
+        <tr><td class="label">特殊料理</td><td class="value">帕蒂莎兰布丁</td></tr>
+        <tr><td class="label">稀有度</td><td class="value">5星</td></tr>
+        <tr><td class="label">中文CV</td><td class="value">紫苏九月</td></tr>
+        <tr><td class="label">日文CV</td><td class="value">金元寿子</td></tr>
+      </table>
+    </div>
+  </aside>
+
+  <!-- ====== 右侧主内容 ====== -->
+  <main class="main-content">
+    <div class="breadcrumb">
+      <a href="#">首页</a> &gt; <a href="#">角色</a> &gt; <a href="#">须弥</a> &gt; <span>妮露</span>
+    </div>
+    <h1 class="page-title">妮露</h1>
+    <div class="page-subtitle">最后更新于 2026-05-12 &nbsp;|&nbsp; 阅读 128,456 次</div>
+
+    <!-- ====== Tab 切换 ====== -->
+    <div class="tab-nav">
+      <button class="tab-btn active" data-tab="stats">基础属性</button>
+      <button class="tab-btn" data-tab="talents">天赋技能</button>
+      <button class="tab-btn" data-tab="const">命之座</button>
+      <button class="tab-btn" data-tab="story">角色故事</button>
+      <button class="tab-btn" data-tab="build">配装推荐</button>
+    </div>
+
+    <!-- ==================== Tab1: 基础属性 ==================== -->
+    <div class="tab-panel active" id="tab-stats">
+      <div class="section-title">突破属性</div>
+      <p style="color:#999;font-size:13px;margin-bottom:12px;">妮露的突破属性为 <span style="color:#7ec8e3;">生命值上限</span>，完美契合其绽放反应玩法。</p>
+      <table class="stats-table">
+        <thead>
+          <tr><th>等级</th><th>基础生命值</th><th>基础攻击力</th><th>基础防御力</th><th class="highlight-col">生命值加成</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>1</td><td>1,185</td><td>18</td><td>51</td><td class="highlight-col">—</td></tr>
+          <tr><td>20</td><td>3,075</td><td>46</td><td>132</td><td class="highlight-col">—</td></tr>
+          <tr><td>40</td><td>5,582</td><td>84</td><td>240</td><td class="highlight-col">7.2%</td></tr>
+          <tr><td>50</td><td>7,082</td><td>107</td><td>305</td><td class="highlight-col">14.4%</td></tr>
+          <tr><td>60</td><td>8,952</td><td>135</td><td>386</td><td class="highlight-col">14.4%</td></tr>
+          <tr><td>70</td><td>11,039</td><td>166</td><td>475</td><td class="highlight-col">21.6%</td></tr>
+          <tr><td>80</td><td>13,417</td><td>202</td><td>578</td><td class="highlight-col">28.8%</td></tr>
+          <tr><td>90</td><td>15,185</td><td>229</td><td>655</td><td class="highlight-col">28.8%</td></tr>
+        </tbody>
+      </table>
+
+      <div class="section-title-sm">角色定位</div>
+      <p style="color:#aaa;font-size:13px;line-height:1.8;">
+        妮露是<span style="color:#7ec8e3;">水元素</span>辅助/副C角色，核心机制为<b>绽放反应特化</b>。
+        当队伍中仅包含<span style="color:#7ec8e3;">水元素</span>与<span style="color:#7ec8e3;">草元素</span>角色时，
+        妮露的元素战技将使队伍进入「金杯的丰馈」状态，产生的草原核将转变为<span style="color:#7ec8e3;">丰穰之核</span>，
+        大幅提升绽放反应的伤害和爆炸范围。妮露自身伤害与治疗量均基于<b>生命值上限</b>。
+      </p>
+    </div>
+
+    <!-- ==================== Tab2: 天赋技能 ==================== -->
+    <div class="tab-panel" id="tab-talents">
+      <!-- 普通攻击 -->
+      <div class="talent-block">
+        <div class="talent-header">
+          <div class="talent-icon">
+            <img src="https://static.wikia.nocookie.net/gensin-impact/images/2/2f/Talent_Dance_of_Haftkarsvar.png"
+                 alt="A" onerror="this.style.display='none';this.nextElementSibling.style.display='flex';">
+            <span style="display:none;font-size:24px;">⚔️</span>
+          </div>
+          <div>
+            <div class="talent-name">普通攻击 · 弦月之舞</div>
+            <div class="talent-type">普通攻击</div>
+          </div>
+        </div>
+        <div class="talent-desc">
+          进行至多<b>三段</b>的连续剑击，造成物理伤害。<br>
+          重击消耗一定体力，向前方施以连续的剑舞，对路径上的敌人造成伤害。
+        </div>
+        <table class="talent-table">
+          <thead>
+            <tr><th>等级</th><th>一段伤害</th><th>二段伤害</th><th>三段伤害</th><th>重击伤害</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Lv.1</td><td>49.5%</td><td>51.2%</td><td>67.3%</td><td>55.9%+60.7%</td></tr>
+            <tr><td>Lv.6</td><td>76.6%</td><td>79.2%</td><td>104.1%</td><td>86.4%+93.9%</td></tr>
+            <tr><td>Lv.10</td><td>102.2%</td><td>105.7%</td><td>139.0%</td><td>115.3%+125.3%</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- 元素战技 -->
+      <div class="talent-block">
+        <div class="talent-header">
+          <div class="talent-icon">
+            <img src="https://static.wikia.nocookie.net/gensin-impact/images/b/b7/Talent_Dance_of_the_Seven_Realms.png"
+                 alt="E" onerror="this.style.display='none';this.nextElementSibling.style.display='flex';">
+            <span style="display:none;font-size:24px;">💧</span>
+          </div>
+          <div>
+            <div class="talent-name">元素战技 · 七域舞步</div>
+            <div class="talent-type">元素战技</div>
+          </div>
+        </div>
+        <div class="talent-desc">
+          进入<b>「翩转」</b>状态，持续进行至多三段的舞步，每段造成<span style="color:#7ec8e3;">水元素伤害</span>。<br>
+          第三段舞步可通过普通攻击进入<b>「剑舞步」</b>，或通过元素战技进入<b>「旋舞步」</b>：<br>
+          &bull; <b>剑舞步</b>：为队伍展开持续的水元素附魔领域（不造成伤害）；<br>
+          &bull; <b>旋舞步</b>：生成跟随角色的水环，持续对周围敌人造成水元素伤害并为队友恢复生命值。<br>
+          两种舞步均能使队伍进入<b>「金杯的丰馈」</b>状态（需满足队伍编制条件）。
+        </div>
+        <table class="talent-table">
+          <thead>
+            <tr><th>等级</th><th>一段伤害</th><th>二段伤害</th><th>剑舞步三段</th><th>旋舞步伤害</th><th>旋舞步治疗</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Lv.1</td><td>1.95%生命</td><td>2.74%生命</td><td>3.51%生命</td><td>3.42%生命</td><td>2.41%生命+231</td></tr>
+            <tr><td>Lv.6</td><td>3.08%生命</td><td>4.32%生命</td><td>5.54%生命</td><td>5.40%生命</td><td>3.99%生命+560</td></tr>
+            <tr><td>Lv.10</td><td>4.28%生命</td><td>6.01%生命</td><td>7.71%生命</td><td>7.52%生命</td><td>5.74%生命+987</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- 元素爆发 -->
+      <div class="talent-block">
+        <div class="talent-header">
+          <div class="talent-icon">
+            <img src="https://static.wikia.nocookie.net/gensin-impact/images/9/9b/Talent_Dance_of_Abzendegi.png"
+                 alt="Q" onerror="this.style.display='none';this.nextElementSibling.style.display='flex';">
+            <span style="display:none;font-size:24px;">🪷</span>
+          </div>
+          <div>
+            <div class="talent-name">元素爆发 · 浮莲舞步 · 远梦聆泉</div>
+            <div class="talent-type">元素爆发</div>
+          </div>
+        </div>
+        <div class="talent-desc">
+          演绎远梦泉声之意，造成<span style="color:#7ec8e3;">水元素范围伤害</span>，并为命中的敌人施加<b>「永世流沔」</b>状态。<br>
+          短暂延迟后，处于「永世流沔」状态下的敌人将再次受到水元素伤害。该技能具备优秀的挂水能力和不俗的爆发伤害。
+        </div>
+        <table class="talent-table">
+          <thead>
+            <tr><th>等级</th><th>技能伤害</th><th>永世流沔伤害</th><th>冷却时间</th><th>元素能量</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Lv.1</td><td>9.78%生命</td><td>11.94%生命</td><td rowspan="3">18.0s</td><td rowspan="3">70</td></tr>
+            <tr><td>Lv.6</td><td>15.4%生命</td><td>18.9%生命</td></tr>
+            <tr><td>Lv.10</td><td>21.5%生命</td><td>26.3%生命</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- 固有天赋 -->
+      <div class="section-title">固有天赋</div>
+      <div class="talent-block">
+        <div class="talent-header">
+          <div class="talent-icon"><span style="font-size:24px;">🌸</span></div>
+          <div>
+            <div class="talent-name">折旋落英之庭</div>
+            <div class="talent-type">固有天赋 · 第一</div>
+          </div>
+        </div>
+        <div class="talent-desc">
+          队伍中所有角色的元素类型均为<span style="color:#7ec8e3;">水元素</span>或<span style="color:#4a9e4a;">草元素</span>，
+          且至少有一名水元素角色和一名草元素角色时，七域舞步将为队伍赋予<b>「金杯的丰馈」</b>效果：角色受到草元素攻击时将提升全队元素精通。
+        </div>
+      </div>
+    </div>
+
+    <!-- ==================== Tab3: 命之座 ==================== -->
+    <div class="tab-panel" id="tab-const">
+      <div class="section-title">命之座 · 睡莲座</div>
+      <div class="const-grid">
+        <div class="const-card">
+          <div class="c-level">C1 · 却月的轻舞</div>
+          <div class="c-desc">七域舞步获得强化：剑舞步的水月伤害提升<span style="color:#7ec8e3;">65%</span>；旋舞步的水环持续时间延长<span style="color:#7ec8e3;">6秒</span>。</div>
+        </div>
+        <div class="const-card">
+          <div class="c-level">C2 · 星天的花雨</div>
+          <div class="c-desc">处于「金杯的丰馈」状态下的角色对敌人造成水元素伤害后，降低该敌人<span style="color:#7ec8e3;">35%</span>水元素抗性，持续10秒。</div>
+        </div>
+        <div class="const-card">
+          <div class="c-level">C3 · 倾影的莲步</div>
+          <div class="c-desc">浮莲舞步·远梦聆泉的技能等级提高<span style="color:#7ec8e3;">3级</span>。至多提升至15级。</div>
+        </div>
+        <div class="const-card">
+          <div class="c-level">C4 · 挽漪的节音</div>
+          <div class="c-desc">七域舞步的翩转状态下的第三段舞步命中敌人后，为妮露恢复<span style="color:#7ec8e3;">15点</span>元素能量。</div>
+        </div>
+        <div class="const-card">
+          <div class="c-level">C5 · 翩旋的流光</div>
+          <div class="c-desc">七域舞步的技能等级提高<span style="color:#7ec8e3;">3级</span>。至多提升至15级。</div>
+        </div>
+        <div class="const-card">
+          <div class="c-level">C6 · 断霜的弦歌</div>
+          <div class="c-desc">基于生命值上限的<span style="color:#7ec8e3;">0.6%</span>提高暴击率，<span style="color:#7ec8e3;">1.2%</span>提高暴击伤害。该效果在生命值达到50,000时达到上限（暴击率+30%，暴击伤害+60%）。</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ==================== Tab4: 角色故事 ==================== -->
+    <div class="tab-panel" id="tab-story">
+      <div class="section-title">角色详情</div>
+      <div class="story-block">
+        <p>妮露是须弥城祖拜尔剧场的明星舞者。她的舞姿如同水池中盛开的睡莲，无论是台下的观众，还是偶然路过的行人，无不被她的舞步所吸引。她的舞蹈不追求炫技，也不刻意卖弄，只是单纯地将心中对美的理解倾注于每一次转身与每一次踮脚之中。</p>
+      </div>
+
+      <div class="section-title-sm">角色故事1（好感度2级解锁）</div>
+      <div class="story-block">
+        <p>在须弥，艺术被视为知识与智慧的另一种表达方式。教令院虽然以学术研究为主，但也从不否认艺术之于心灵的价值。祖拜尔剧场就是在这种包容的氛围中诞生的——一个供艺术家们自由发挥的舞台。妮露加入剧场时只有十四岁，彼时的她已经在民间的舞蹈比赛中小有名气。剧场的主人祖拜尔先生一眼便相中了这个女孩身上那种与众不同的气质。</p>
+      </div>
+
+      <div class="section-title-sm">角色故事2（好感度4级解锁）</div>
+      <div class="story-block">
+        <p>妮露的日常很简单：清晨练舞，午后在剧场排练，傍晚为观众表演。她从不觉得这样的生活单调，反而乐在其中。有人问她是否想过离开须弥，去更广阔的世界看看。妮露笑着摇了摇头——"我的舞台就在这里，在须弥。这里有我想要守护的东西，有我想要传达给观众的情感。这就足够了。"</p>
+      </div>
+
+      <div class="section-title-sm">神之眼（好感度6级解锁）</div>
+      <div class="story-block">
+        <p>妮露获得神之眼的那一天，是一个再普通不过的演出日。那天她表演的是一支名为「睡莲」的新舞——这支舞并非任何现存舞谱的复刻，而是她花费数月时间，观察花园水池中的睡莲从清晨绽放到夜晚闭合的全过程后，自行编排的创作。当最后一个音符落下，一枚水元素的神之眼已悄然躺在舞台的角落。观众们沉浸在舞蹈的余韵中，甚至没有人注意到这枚神之眼的出现。妮露拾起它的时候，心中没有狂喜，只有一种淡淡的笃定——仿佛这枚神之眼本就该属于她。</p>
+      </div>
+
+      <div class="section-title-sm">官方介绍</div>
+      <div class="story-block">
+        <p>「祖拜尔剧场的舞者，妮露。我可不会因为你是客人就手下留情哦。」</p>
+        <p>——初次见面时的自我介绍</p>
+        <p>作为祖拜尔剧场的台柱，妮露从不缺少赞美与掌声。但她深知，真正的艺术不是追逐喝彩，而是将自己内心最纯粹的情感化作舞蹈的语言，让每一位观众都能感受到那份真诚。无论台下坐着的是须弥的高官学者，还是远道而来的异乡旅人，妮露的舞步始终如一——从容、优雅，如同须弥城中永不凋谢的睡莲。</p>
+      </div>
+    </div>
+
+    <!-- ==================== Tab5: 配装推荐 ==================== -->
+    <div class="tab-panel" id="tab-build">
+      <div class="build-category">
+        <h3>推荐武器</h3>
+        <div class="build-grid">
+          <div class="build-item">
+            <div class="build-icon" style="background:#3a2510;">🗡</div>
+            <div class="build-info">
+              <div class="b-name">圣显之钥 <span style="color:#ffb84d;">★★★★★</span></div>
+              <div class="b-note">毕业武器 · 生命值加成极高</div>
+            </div>
+          </div>
+          <div class="build-item">
+            <div class="build-icon" style="background:#1a3030;">🗡</div>
+            <div class="build-info">
+              <div class="b-name">苍古自由之誓 <span style="color:#ffb84d;">★★★★★</span></div>
+              <div class="b-note">优秀替代 · 提供全队增益</div>
+            </div>
+          </div>
+          <div class="build-item">
+            <div class="build-icon" style="background:#2a2a1a;">🗡</div>
+            <div class="build-info">
+              <div class="b-name">西福斯的月光 <span style="color:#b884ff;">★★★★</span></div>
+              <div class="b-note">精通向四星 · 充能辅助</div>
+            </div>
+          </div>
+          <div class="build-item">
+            <div class="build-icon" style="background:#2a1a1a;">🗡</div>
+            <div class="build-info">
+              <div class="b-name">铁蜂刺 <span style="color:#b884ff;">★★★★</span></div>
+              <div class="b-note">锻造获取 · 提供元素精通</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="build-category">
+        <h3>推荐圣遗物</h3>
+        <div class="build-grid">
+          <div class="build-item">
+            <div class="build-icon" style="background:#1a3020;">💠</div>
+            <div class="build-info">
+              <div class="b-name">千岩牢固 2件 + 沉沦之心 2件</div>
+              <div class="b-note">生命+20% / 水伤+15% · 通用毕业</div>
+            </div>
+          </div>
+          <div class="build-item">
+            <div class="build-icon" style="background:#302a10;">💠</div>
+            <div class="build-info">
+              <div class="b-name">乐园遗落之花 4件</div>
+              <div class="b-note">绽放特化 · 丰穰之核伤害最大化</div>
+            </div>
+          </div>
+          <div class="build-item">
+            <div class="build-icon" style="background:#1a202a;">💠</div>
+            <div class="build-info">
+              <div class="b-name">千岩牢固 4件</div>
+              <div class="b-note">辅助向 · 全队攻击力增益</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="build-category">
+        <h3>圣遗物主词条推荐</h3>
+        <table class="stats-table">
+          <thead>
+            <tr><th>部位</th><th>主词条</th><th>备注</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>生之花</td><td>生命值</td><td>固定</td></tr>
+            <tr><td>死之羽</td><td>攻击力</td><td>固定</td></tr>
+            <tr><td>时之沙</td><td class="highlight-col">生命值%</td><td>首选</td></tr>
+            <tr><td>空之杯</td><td class="highlight-col">生命值% / 水元素伤害%</td><td>根据队伍定位</td></tr>
+            <tr><td>理之冠</td><td class="highlight-col">生命值%</td><td>首选</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="build-category">
+        <h3>推荐配队</h3>
+        <div class="build-grid">
+          <div class="build-item">
+            <div class="build-icon">🌿</div>
+            <div class="build-info">
+              <div class="b-name">妮露 + 纳西妲 + 白术 + 行秋</div>
+              <div class="b-note">双水双草 · 绽放队完全体</div>
+            </div>
+          </div>
+          <div class="build-item">
+            <div class="build-icon">🌿</div>
+            <div class="build-info">
+              <div class="b-name">妮露 + 纳西妲 + 柯莱 + 芭芭拉</div>
+              <div class="b-note">平民绽放队 · 成本较低</div>
+            </div>
+          </div>
+          <div class="build-item">
+            <div class="build-icon">🌿</div>
+            <div class="build-info">
+              <div class="b-name">妮露 + 艾尔海森 + 夜兰 + 瑶瑶</div>
+              <div class="b-note">双水双草 · 有前台输出</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<!-- ====== 页脚 ====== -->
+<footer class="page-footer">
+  <p>本WIKI由玩家自发组建和维护，与米哈游及其关联公司无关。</p>
+  <p>本站内容若未经特别声明，则遵循 <a href="#">CC BY-NC-SA 4.0</a> 协议，转载需注明来源。</p>
+  <p style="margin-top:6px;">© 原神WIKI · BWIKI · <a href="#">反馈与建议</a></p>
+</footer>
+
+<script>
+/* ===== Tab 切换 ===== */
+document.querySelectorAll('.tab-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById('tab-' + btn.dataset.tab).classList.add('active');
+  });
+});
+</script>
+
+</body>
+</html>
