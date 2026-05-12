@@ -363,9 +363,11 @@ a:hover { color: #b8e4f0; }
   <aside class="sidebar">
     <!-- 角色立绘 -->
     <div class="char-portrait">
-      <img src="https://static.wikia.nocookie.net/gensin-impact/images/d/dc/Nilou_Card.png"
-           alt="妮露" style="width:100%;display:block;"
-           onerror="this.parentElement.innerHTML='<div style=width:100%;aspect-ratio:3/4;background:linear-gradient(180deg,#1a3050,#0d1b2a);display:flex;align-items:center;justify-content:center;font-size:80px;color:#7ec8e3;>💃</div>'">
+      <div style="width:100%;aspect-ratio:3/4;background:linear-gradient(180deg,#1a3050 0%,#0d1b2a 40%,#162040 100%);display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden;">
+        <div style="position:absolute;top:20%;left:50%;transform:translateX(-50%);width:70%;aspect-ratio:1;border-radius:50%;background:radial-gradient(circle,rgba(126,200,227,0.15) 0%,rgba(74,144,217,0.08) 40%,transparent 70%);"></div>
+        <div style="position:absolute;bottom:25%;left:50%;transform:translateX(-50%);width:80%;height:30%;background:radial-gradient(ellipse at center,rgba(126,200,227,0.1) 0%,transparent 70%);"></div>
+        <div style="z-index:1;font-size:80px;filter:drop-shadow(0 0 20px rgba(126,200,227,0.4));">💃</div>
+      </div>
       <div class="char-name-overlay">
         <h2>妮 露</h2>
         <div class="en-name">Nilou</div>
@@ -449,9 +451,7 @@ a:hover { color: #b8e4f0; }
       <div class="talent-block">
         <div class="talent-header">
           <div class="talent-icon">
-            <img src="https://static.wikia.nocookie.net/gensin-impact/images/2/2f/Talent_Dance_of_Haftkarsvar.png"
-                 alt="A" onerror="this.style.display='none';this.nextElementSibling.style.display='flex';">
-            <span style="display:none;font-size:24px;">⚔️</span>
+            <div style="width:100%;height:100%;background:linear-gradient(135deg,#1a3050,#2a5298);display:flex;align-items:center;justify-content:center;font-size:24px;">⚔️</div>
           </div>
           <div>
             <div class="talent-name">普通攻击 · 弦月之舞</div>
@@ -478,9 +478,7 @@ a:hover { color: #b8e4f0; }
       <div class="talent-block">
         <div class="talent-header">
           <div class="talent-icon">
-            <img src="https://static.wikia.nocookie.net/gensin-impact/images/b/b7/Talent_Dance_of_the_Seven_Realms.png"
-                 alt="E" onerror="this.style.display='none';this.nextElementSibling.style.display='flex';">
-            <span style="display:none;font-size:24px;">💧</span>
+            <div style="width:100%;height:100%;background:linear-gradient(135deg,#1a3050,#2a5298);display:flex;align-items:center;justify-content:center;font-size:24px;">💧</div>
           </div>
           <div>
             <div class="talent-name">元素战技 · 七域舞步</div>
@@ -510,9 +508,7 @@ a:hover { color: #b8e4f0; }
       <div class="talent-block">
         <div class="talent-header">
           <div class="talent-icon">
-            <img src="https://static.wikia.nocookie.net/gensin-impact/images/9/9b/Talent_Dance_of_Abzendegi.png"
-                 alt="Q" onerror="this.style.display='none';this.nextElementSibling.style.display='flex';">
-            <span style="display:none;font-size:24px;">🪷</span>
+            <div style="width:100%;height:100%;background:linear-gradient(135deg,#1a3050,#2a5298);display:flex;align-items:center;justify-content:center;font-size:24px;">🪷</div>
           </div>
           <div>
             <div class="talent-name">元素爆发 · 浮莲舞步 · 远梦聆泉</div>
